@@ -1,0 +1,10 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: realtime-chain-processor
+  main:
+    web-application-type: servlet
+web3:
+  rpc:
+    url: https://mainnet.infura.io/v3/0b5c18e5bcd0407787cc7d319dbb056b
