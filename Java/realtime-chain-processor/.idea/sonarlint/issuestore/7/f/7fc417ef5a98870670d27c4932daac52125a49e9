@@ -1,0 +1,5 @@
+
+B
+java:S1602(",Remove useless curly braces around statement(½ÒÚ
+]
+java:S1612("GReplace this lambda with method reference 'nftEventProcessor::process'.(½ÒÚ
