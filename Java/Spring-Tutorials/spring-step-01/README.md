@@ -1,1 +1,1 @@
-设计一个SpringBean容器
+设计一个简单的SpringBean容器
