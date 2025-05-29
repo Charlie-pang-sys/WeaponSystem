@@ -7,7 +7,7 @@ import cn.bugstack.springframework.beans.factory.config.BeanDefinition;
  * @PackageName: cn.bugstack.springframework.beans.factory.support
  * @Author 彭仁杰
  * @Date 2025/5/26 21:54
- * @Description
+ * @Description 实例化bean
  **/
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory{
     @Override

@@ -1,0 +1,1 @@
+在Spring中，AutowireCapable代表bean的实例化、初始化、依赖注入等
