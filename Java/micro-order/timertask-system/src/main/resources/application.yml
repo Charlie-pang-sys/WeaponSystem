@@ -1,0 +1,8 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /timertask
+
+lark:
+  webhook:
+    alert: https://open.larksuite.com/open-apis/bot/v2/hook/8546725c-958b-44da-bebd-7e410244df7d

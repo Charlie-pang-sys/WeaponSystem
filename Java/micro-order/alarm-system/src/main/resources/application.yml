@@ -1,0 +1,8 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /alarm
+
+lark:
+  webhook:
+    alert: https://open.larksuite.com/open-apis/bot/v2/hook/8546725c-958b-44da-bebd-7e410244df7d
