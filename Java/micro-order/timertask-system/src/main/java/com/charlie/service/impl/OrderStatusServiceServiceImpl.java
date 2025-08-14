@@ -5,6 +5,7 @@ import com.charlie.dao.OrderStatusDao;
 import com.charlie.pojo.entity.OrderStatusDO;
 import com.charlie.service.OrderStatusService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -13,6 +14,8 @@ public class OrderStatusServiceServiceImpl extends ServiceImpl<OrderStatusDao, O
 
     @Resource
     private OrderStatusDao orderStatusDao;
+
+    @Transactional
     @Override
     public int insert(OrderStatusDO orderStatusDO) {
         return orderStatusDao.insert(orderStatusDO);

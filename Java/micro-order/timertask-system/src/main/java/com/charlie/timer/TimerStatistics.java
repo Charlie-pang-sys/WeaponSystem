@@ -21,7 +21,7 @@ public class TimerStatistics {
     @Resource
     private OrderStatusService orderStatusService;
     //可添加到配置文件中
-    @Scheduled(cron = "0 0/5 0 * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void statistics() {
         //todo  redis查询
         String start = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -39,6 +39,18 @@ public class TimerStatistics {
         if(StrUtil.isNotEmpty(completedCountStr)){
             completedCount = Integer.parseInt(completedCountStr);
         }
-        orderStatusService.insert(new OrderStatusDO(Id.getId(),LocalDateTime.now(),createCount,completedCount));
+        OrderStatusDO orderStatusDO = build(createCount,completedCount);
+        orderStatusService.insert(orderStatusDO);
+    }
+
+    private OrderStatusDO build(int createCount,int completedCount){
+        OrderStatusDO orderStatusDO = new OrderStatusDO();
+        orderStatusDO.setId(Id.getId());
+        orderStatusDO.setStatTime(LocalDateTime.now());
+        orderStatusDO.setNewCount(createCount);
+        orderStatusDO.setCompletedCount(completedCount);
+        orderStatusDO.setCreateTime(LocalDateTime.now());
+        orderStatusDO.setUpdateTime(LocalDateTime.now());
+        return orderStatusDO;
     }
 }

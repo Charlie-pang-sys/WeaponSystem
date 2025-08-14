@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderDO> implements 
      * @param orderDTO 订单信息
      * @return ResponseEntity<String>
      */
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ResponseEntity<String> batchCreate(OrderDTO orderDTO){
         printLog(orderDTO);
@@ -59,7 +61,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderDO> implements 
         }).collect(Collectors.toList());
         saveBatch(orderList);
         //下单的数量+1
-        stringRedisTemplate.opsForValue().increment(ORDER_CREATE_KEY);
+        stringRedisTemplate.opsForValue().increment(ORDER_CREATE_KEY,orderList.size());
         return ResponseEntity.ok("success");
     }
 

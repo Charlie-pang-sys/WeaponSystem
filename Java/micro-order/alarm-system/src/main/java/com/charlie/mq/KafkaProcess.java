@@ -5,7 +5,6 @@ import com.charlie.pojo.entity.AlarmDO;
 import com.charlie.service.AlarmService;
 import com.charlie.service.LarkAlarmService;
 import com.charlie.util.Id;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -13,15 +12,13 @@ import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
 @Slf4j
 public class KafkaProcess {
-
-    private static final ObjectMapper JSON = new ObjectMapper();
-
     @Resource
     private LarkAlarmService larkAlarmService;
     @Resource
@@ -33,8 +30,8 @@ public class KafkaProcess {
         for (ConsumerRecord<String, String> consumerRecord : consumerRecords) {
             String message = consumerRecord.value();
             log.info("接收订单状态异常的消息：{}", message);
-            larkAlarmService.sendAlert(message);
-            AlarmDO alarmDO = buildAlarmDO(message);
+            boolean flag = larkAlarmService.sendAlert(message);
+            AlarmDO alarmDO = buildAlarmDO(message,flag);
             alarmDOList.add(alarmDO);
         }
         //此处可以优化为定时器定时存储
@@ -42,11 +39,14 @@ public class KafkaProcess {
         ack.acknowledge();
     }
 
-    private AlarmDO buildAlarmDO(String message){
+    private AlarmDO buildAlarmDO(String message, boolean flag){
         AlarmDO alarmDO = new AlarmDO();
         alarmDO.setId(Id.getId());
         alarmDO.setLog(message);
         alarmDO.setSystemName("order-system");
+        alarmDO.setStatus(flag ? 1 : 0);
+        alarmDO.setCreateTime(LocalDateTime.now());
+        alarmDO.setUpdateTime(LocalDateTime.now());
         return alarmDO;
     }
 }

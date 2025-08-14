@@ -1,7 +1,5 @@
 package com.charlie.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -18,8 +16,10 @@ public class AlarmDO {
 
     private String log;
 
-    @TableField(fill = FieldFill.INSERT)
+    //日志发送状态
+    private int status;
+
     private LocalDateTime createTime;
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+
     private LocalDateTime updateTime;
 }

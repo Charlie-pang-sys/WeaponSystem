@@ -1,7 +1,6 @@
 package com.charlie.mq;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.charlie.constant.RedisKeyConstant;
 import com.charlie.constant.TopicConstant;
 import com.charlie.dao.OrderDao;
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -45,6 +43,7 @@ public class KafkaProcess {
             String orderId = tuple2.getT1();
             String status = tuple2.getT2();
             try {
+                int num = 1/0;
                 // 1% 的概率抛出异常（模拟处理失败）
                 if (RandomUtils.nextFloat() < 0.01f) {
                     log.warn("订单 {} 触发模拟异常（1% 概率）", orderId);
