@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-COPY app/order-system-1.0-SNAPSHOT.jar order-system.jar
+COPY order-system-1.0-SNAPSHOT.jar order-system.jar
 
 # 设置时区
 ENV TZ=Asia/Shanghai
