@@ -57,6 +57,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderDO> implements 
                 throw new RuntimeException("商品数量必须大于0");
             }
             String itemId = order.getItemId();
+            if(StrUtil.isEmpty(itemId)){
+                throw new RuntimeException("商品ID不能为空");
+            }
             return buildOrderDO(userId, itemId, count);
         }).collect(Collectors.toList());
         saveBatch(orderList);
@@ -84,11 +87,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderDO> implements 
     }
 
     @Override
-    public ResponseEntity<OrderDO> selectByUserId(String userId) {
+    public ResponseEntity<List<OrderDO>> selectByUserId(String userId) {
         LambdaQueryWrapper<OrderDO> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(OrderDO::getUserId,userId);
-        OrderDO orderDO = orderDao.selectOne(wrapper);
-        return ResponseEntity.ok(orderDO);
+        List<OrderDO> orderDOs = orderDao.selectList(wrapper);
+        return ResponseEntity.ok(orderDOs);
     }
 
     @Override

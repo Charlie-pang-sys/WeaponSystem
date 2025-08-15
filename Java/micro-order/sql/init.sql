@@ -33,5 +33,6 @@ CREATE TABLE IF NOT EXISTS `alarm_info`  (
   `status` TINYINT DEFAULT 0 COMMENT 'lark发送状态',
   `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  INDEX idx_system (system_name)
+  INDEX idx_system (system_name),
+  INDEX idx_log_prefix (log(255))
 );

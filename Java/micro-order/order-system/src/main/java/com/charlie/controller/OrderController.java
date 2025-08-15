@@ -6,10 +6,11 @@ import com.charlie.pojo.entity.OrderDO;
 import com.charlie.service.OrderService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @RestController
 @RequestMapping("/order")
@@ -29,12 +30,12 @@ public class OrderController {
     }
 
     @GetMapping("/selectByUserId/{userId}")
-    public ResponseEntity<OrderDO> selectByUserId(@PathVariable String userId){
+    public ResponseEntity<List<OrderDO>> selectByUserId(@PathVariable String userId){
         return orderService.selectByUserId(userId);
     }
 
     @PostMapping("/updateOrderStatus")
-    public ResponseEntity<String> updateOrderStatus(@RequestBody UpdateOrderStatusDTO updateOrderStatusDTO) throws JsonProcessingException {
+    public ResponseEntity<String> updateOrderStatus(@Validated @RequestBody UpdateOrderStatusDTO updateOrderStatusDTO) throws JsonProcessingException {
         return orderService.updateOrderStatus(updateOrderStatusDTO);
     }
 }

@@ -33,7 +33,7 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
 
-  order-service:
+  order-system:
     build: 
       context: /app/order-system
       dockerfile: Dockerfile

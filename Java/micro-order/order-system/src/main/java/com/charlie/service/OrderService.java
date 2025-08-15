@@ -7,12 +7,14 @@ import com.charlie.pojo.entity.OrderDO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 public interface OrderService extends IService<OrderDO> {
     ResponseEntity<String> batchCreate(OrderDTO orderDTO);
 
     ResponseEntity<OrderDO> selectByOrderId(String orderId);
 
-    ResponseEntity<OrderDO> selectByUserId(String userId);
+    ResponseEntity<List<OrderDO>> selectByUserId(String userId);
 
     ResponseEntity<String> updateOrderStatus(UpdateOrderStatusDTO updateOrderStatusDTO) throws JsonProcessingException;
 }
