@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -24,6 +25,7 @@ public class LarkAlarmServiceImpl implements LarkAlarmService {
      * 发送告警消息
      */
     public boolean sendAlert(String message) {
+        String str = "订单消息异常！时间：" + LocalDateTime.now()+"《"+message+"》";
         String webhookUrl = larkWebhookProperties.getAlert();
         if (webhookUrl == null || webhookUrl.isEmpty()) {
             log.warn("飞书 webhook URL 未配置");
@@ -31,7 +33,7 @@ public class LarkAlarmServiceImpl implements LarkAlarmService {
         }
 
         // 构建消息体
-        LarkMessageDO msg = new LarkMessageDO("[⚠️ 系统告警]\n" + message);
+        LarkMessageDO msg = new LarkMessageDO("[⚠️ 系统告警]\n" + str);
 
         try {
             // 使用 RestTemplate 发送 POST 请求

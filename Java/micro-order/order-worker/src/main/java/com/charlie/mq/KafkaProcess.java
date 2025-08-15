@@ -41,6 +41,7 @@ public class KafkaProcess {
             String orderId = orderDO.getOrderId();
             int status = orderDO.getStatus();
             try {
+                flagNum = flagNum+1;
                 if (flagNum % 3 == 0) {
                     log.warn("订单 {} 触发模拟异常（3% 概率）", orderId);
                     throw new RuntimeException("模拟订单处理异常：系统临时故障");
