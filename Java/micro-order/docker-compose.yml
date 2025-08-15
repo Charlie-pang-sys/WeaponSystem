@@ -40,6 +40,31 @@ services:
     container_name: order-system
     ports:
       - "8080:8080"
+    environment:
+      # ✅ 配置 MySQL 地址（使用服务名 'mysql' 作为 host）
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/order?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+
+      # ✅ 配置 Redis 地址
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      - SPRING_REDIS_DATABASE=0
+
+      # ✅ 配置 Kafka 地址
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KAFKA_PRODUCER_VALUE-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
+      - SPRING_KAFKA_PRODUCER_KEY-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
+      - SPRING_KAFKA_PRODUCER_RETRIES=3
+      - SPRING_KAFKA_PRODUCER_BATCH-SIZE=16384
+      - SPRING_KAFKA_PRODUCER_BUFFER-MEMORY=33554432
+      - SPRING_KAFKA_CONSUMER_KEY-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
+      - SPRING_KAFKA_CONSUMER_VALUE-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
+      - SPRING_KAFKA_CONSUMER_MAX-POLL-RECORDS=1000
+      - SPRING_KAFKA_CONSUMER_ENABLE-AUTO-COMMIT=true
+      - SPRING_KAFKA_CONSUMER_AUTO-OFFSET-RESET=latest
+      - SPRING_KAFKA_CONSUMER_AUTO-COMMIT-INTERVAL=100
     depends_on:
       - mysql
       - redis
@@ -52,6 +77,31 @@ services:
     container_name: order-worker
     ports:
       - "8081:8081"
+    environment:
+      # ✅ 配置 MySQL 地址（使用服务名 'mysql' 作为 host）
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/order?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+
+      # ✅ 配置 Redis 地址
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      - SPRING_REDIS_DATABASE=0
+
+      # ✅ 配置 Kafka 地址
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KAFKA_PRODUCER_VALUE-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
+      - SPRING_KAFKA_PRODUCER_KEY-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
+      - SPRING_KAFKA_PRODUCER_RETRIES=3
+      - SPRING_KAFKA_PRODUCER_BATCH-SIZE=16384
+      - SPRING_KAFKA_PRODUCER_BUFFER-MEMORY=33554432
+      - SPRING_KAFKA_CONSUMER_KEY-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
+      - SPRING_KAFKA_CONSUMER_VALUE-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
+      - SPRING_KAFKA_CONSUMER_MAX-POLL-RECORDS=1000
+      - SPRING_KAFKA_CONSUMER_ENABLE-AUTO-COMMIT=true
+      - SPRING_KAFKA_CONSUMER_AUTO-OFFSET-RESET=latest
+      - SPRING_KAFKA_CONSUMER_AUTO-COMMIT-INTERVAL=100
     depends_on:
       - kafka
       - mysql
@@ -63,6 +113,26 @@ services:
     container_name: alarm-system
     ports:
       - "8082:8082"
+    environment:
+      # ✅ 配置 MySQL 地址（使用服务名 'mysql' 作为 host）
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/order?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+
+      # ✅ 配置 Kafka 地址
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KAFKA_PRODUCER_VALUE-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
+      - SPRING_KAFKA_PRODUCER_KEY-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
+      - SPRING_KAFKA_PRODUCER_RETRIES=3
+      - SPRING_KAFKA_PRODUCER_BATCH-SIZE=16384
+      - SPRING_KAFKA_PRODUCER_BUFFER-MEMORY=33554432
+      - SPRING_KAFKA_CONSUMER_KEY-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
+      - SPRING_KAFKA_CONSUMER_VALUE-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
+      - SPRING_KAFKA_CONSUMER_MAX-POLL-RECORDS=1000
+      - SPRING_KAFKA_CONSUMER_ENABLE-AUTO-COMMIT=true
+      - SPRING_KAFKA_CONSUMER_AUTO-OFFSET-RESET=latest
+      - SPRING_KAFKA_CONSUMER_AUTO-COMMIT-INTERVAL=100
     depends_on:
       - kafka
       - mysql
@@ -73,6 +143,17 @@ services:
     container_name: timertask-system
     ports:
       - "8083:8083"
+    environment:
+      # ✅ 配置 MySQL 地址（使用服务名 'mysql' 作为 host）
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/order?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+
+      # ✅ 配置 Redis 地址
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      - SPRING_REDIS_DATABASE=0
     depends_on:
       - redis
       - mysql

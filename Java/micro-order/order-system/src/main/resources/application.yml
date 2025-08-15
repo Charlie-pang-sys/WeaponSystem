@@ -4,10 +4,10 @@ server:
     context-path: /orderSystem
 spring:
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.153.130:3306/order?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-    password: 123456
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
       auto-commit: true
       pool-name: order-system-hikari
@@ -22,7 +22,7 @@ spring:
       #连接最大生命周期
       max-lifetime: 1800000
   kafka:
-    bootstrap-servers: 192.168.153.130:9092
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
     producer:
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -38,6 +38,11 @@ spring:
       auto-commit-interval: 100
 
   redis:
-    host: 192.168.153.130
-    port: 6379
+    host: ${SPRING_REDIS_HOST}
+    port: ${SPRING_REDIS_PORT}
+
+
+
+
+
 
