@@ -26,9 +26,9 @@ public class TimerStatistics {
         String start = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         System.out.println(start+"开始统计订单数据");
         String end = LocalDateTime.now().minusMinutes(5).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        List<OrderDO> orderDOList = orderService.selectByParam(start,end);
+        List<OrderDO> orderDOList = orderService.selectByParam(end,start);
         if(CollectionUtils.isEmpty(orderDOList)){
-            log.debug("{}至{}时间暂无新数据",start,end);
+            log.info("{}至{}时间暂无新数据",start,end);
             return;
         }
         List<OrderDO> createList = new ArrayList<>();
