@@ -23,7 +23,7 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config">
           <stringProp name="filename">/jmeter/users.csv</stringProp>
           <stringProp name="fileEncoding">UTF-8</stringProp>
           <stringProp name="variableNames">user_id</stringProp>
@@ -35,20 +35,20 @@
           <stringProp name="shareMode">shareMode.all</stringProp>
         </CSVDataSet>
         <hashTree/>
-        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Target Throughput 500" enabled="true">
+        <ConstantThroughputTimer guiclass="TestBeanGUI" testclass="ConstantThroughputTimer" testname="Target Throughput 500">
           <doubleProp>
             <name>throughput</name>
             <value>30000.0</value>
             <savedValue>0.0</savedValue>
           </doubleProp>
-          <intProp name="calcMode">1</intProp>
+          <intProp name="calcMode">2</intProp>
         </ConstantThroughputTimer>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get /orderSystem/userId" enabled="true">
-          <stringProp name="HTTPSampler.domain">192.168.153.130</stringProp>
-          <stringProp name="HTTPSampler.port">8080</stringProp>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get /orderSystem/userId">
+          <stringProp name="HTTPSampler.domain">189.1.221.189</stringProp>
+          <stringProp name="HTTPSampler.port">8081</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/orderSystem/order/selectByUserId/${user_id}</stringProp>
+          <stringProp name="HTTPSampler.path">/worker/worker/queryOrders?userId=user_0002&amp;status=1&amp;startTime=1755514400&amp;endTime=1755528800&amp;pageNum=1&amp;pageSize=10</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
