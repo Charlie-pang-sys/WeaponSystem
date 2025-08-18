@@ -1,8 +1,9 @@
 package com.charlie.pojo.enums;
 
 public enum OrderStatusEnum {
-    NEW(0, "新订单"),
-    PAID(1, "已完成")
+    NEW(1, "新订单"),
+    COMPLETED(2, "已完成"),
+    EXCEPTION(3, "异常");
     ;
     private int code;
     private String message;

@@ -1,56 +1,50 @@
 package com.charlie.timer;
 
-import cn.hutool.core.util.StrUtil;
-import com.charlie.constant.RedisKeyConstant;
-import com.charlie.pojo.entity.OrderStatusDO;
-import com.charlie.service.OrderStatusService;
-import com.charlie.util.Id;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import com.charlie.pojo.entity.OrderDO;
+import com.charlie.service.OrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
+@Slf4j
 @Component
 public class TimerStatistics {
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
 
     @Resource
-    private OrderStatusService orderStatusService;
+    private OrderService orderService;
     //可添加到配置文件中
     @Scheduled(cron = "0 0/5 * * * ?")
     public void statistics() {
         //todo  redis查询
         String start = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         System.out.println(start+"开始统计订单数据");
-
+        String end = LocalDateTime.now().minusMinutes(5).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        List<OrderDO> orderDOList = orderService.selectByParam(start,end);
+        if(CollectionUtils.isEmpty(orderDOList)){
+            log.debug("{}至{}时间暂无新数据",start,end);
+            return;
+        }
+        List<OrderDO> createList = new ArrayList<>();
+        List<OrderDO> completedList = new ArrayList<>();
+        for (OrderDO orderDO : orderDOList) {
+            int status = orderDO.getStatus();
+            if(status==0){
+                createList.add(orderDO);
+            }else{
+                completedList.add(orderDO);
+            }
+        }
         //已下单的订单数
-        String createCountStr = stringRedisTemplate.opsForValue().getAndDelete(RedisKeyConstant.ORDER_CREATE_KEY);
-        int createCount = 0;
-        if(StrUtil.isNotEmpty(createCountStr)){
-            createCount = Integer.parseInt(createCountStr);
-        }
+        log.info("{}至{}时间查询到{}条《新创建》的订单",start,end,createList.size());
         //已完成的订单数
-        String completedCountStr = stringRedisTemplate.opsForValue().getAndDelete(RedisKeyConstant.ORDER_COMPLETED_KEY);
-        int completedCount = 0;
-        if(StrUtil.isNotEmpty(completedCountStr)){
-            completedCount = Integer.parseInt(completedCountStr);
-        }
-        OrderStatusDO orderStatusDO = build(createCount,completedCount);
-        orderStatusService.insert(orderStatusDO);
-    }
+        log.info("{}至{}时间查询到{}条《已完成》的订单",start,end,completedList.size());
 
-    private OrderStatusDO build(int createCount,int completedCount){
-        OrderStatusDO orderStatusDO = new OrderStatusDO();
-        orderStatusDO.setId(Id.getId());
-        orderStatusDO.setStatTime(LocalDateTime.now());
-        orderStatusDO.setNewCount(createCount);
-        orderStatusDO.setCompletedCount(completedCount);
-        orderStatusDO.setCreateTime(LocalDateTime.now());
-        orderStatusDO.setUpdateTime(LocalDateTime.now());
-        return orderStatusDO;
     }
 }

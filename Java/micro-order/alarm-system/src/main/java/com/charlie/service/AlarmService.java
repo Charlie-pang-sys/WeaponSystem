@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface AlarmService extends IService<AlarmDO> {
     boolean insertBatch(List<AlarmDO> alarmDOList);
+
+    boolean insert(AlarmDO alarmDO);
 }

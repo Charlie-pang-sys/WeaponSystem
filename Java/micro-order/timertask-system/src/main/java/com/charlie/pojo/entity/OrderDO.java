@@ -6,17 +6,26 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@TableName("order_info")
 @Data
-@TableName("order_stats")
-public class OrderStatusDO {
+public class OrderDO {
     @TableId
     private Long id;
 
-    private LocalDateTime statTime;
-
-    private Integer newCount;
-
-    private int completedCount;
+    private String orderId;
+    /**
+     * 用户id
+     */
+    private String userId;
+    /**
+     * 商品id
+     */
+    private String itemId;
+    /**
+     * 商品数量
+     */
+    private int count;
+    private int status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

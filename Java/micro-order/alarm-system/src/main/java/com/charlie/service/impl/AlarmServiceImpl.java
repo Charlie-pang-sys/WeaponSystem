@@ -16,4 +16,9 @@ public class AlarmServiceImpl extends ServiceImpl<AlarmDao, AlarmDO> implements 
     public boolean insertBatch(List<AlarmDO> alarmDOList) {
         return this.saveBatch(alarmDOList);
     }
+
+    @Override
+    public boolean insert(AlarmDO alarmDO) {
+        return this.save(alarmDO);
+    }
 }

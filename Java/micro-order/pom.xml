@@ -37,10 +37,9 @@
         <lombok.version>1.18.24</lombok.version>
         <knife4j.version>3.0.3</knife4j.version>
         <swagger-annotations.verison>1.5.22</swagger-annotations.verison>
-        <spring-kafka.version>2.9.13</spring-kafka.version>
+<!--        <spring-rocketmq.version>2.2.0</spring-rocketmq.version>-->
         <log4j-core.version>2.23.0</log4j-core.version>
         <org.slf4j.version>1.7.36</org.slf4j.version>
-        <kafka-clients.version>3.4.1</kafka-clients.version>
         <hutool.verison>5.8.28</hutool.verison>
         <commons-lang3.version>3.12.0</commons-lang3.version>
     </properties>
@@ -73,11 +72,6 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>${kafka-clients.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
                 <version>${logback.version}</version>
@@ -86,11 +80,6 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.springframework.kafka</groupId>
-                <artifactId>spring-kafka</artifactId>
-                <version>${spring-kafka.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

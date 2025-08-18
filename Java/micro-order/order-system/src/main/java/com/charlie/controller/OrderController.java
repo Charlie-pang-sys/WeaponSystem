@@ -19,8 +19,9 @@ public class OrderController {
     @Resource
     private OrderService orderService;
 
+//    @RateLimit(value = 100, timeWindow = 1)
     @PostMapping("batchCreate")
-    public ResponseEntity<String> batchCreate(@RequestBody OrderDTO orderDTO){
+    public ResponseEntity<String> batchCreate(@Validated @RequestBody OrderDTO orderDTO){
         return orderService.batchCreate(orderDTO);
     }
 

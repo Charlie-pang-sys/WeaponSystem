@@ -6,7 +6,7 @@ USE `order`;
 
 CREATE TABLE IF NOT EXISTS `order_info` (
   `id` BIGINT AUTO_INCREMENT PRIMARY KEY,
-  `order_id` VARCHAR(32) UNIQUE NOT NULL COMMENT '订单ID',
+  `order_id` VARCHAR(255) UNIQUE NOT NULL COMMENT '订单ID',
   `user_id` VARCHAR(32) NOT NULL COMMENT '用户ID',
   `item_id` VARCHAR(32) COMMENT '商品ID',
   `count` INT COMMENT '数量',
@@ -36,3 +36,14 @@ CREATE TABLE IF NOT EXISTS `alarm_info`  (
   INDEX idx_system (system_name),
   INDEX idx_log_prefix (log(255))
 );
+
+CREATE TABLE `local_transaction_message` (
+  `id` bigint NOT NULL COMMENT '主键',
+  `order_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '订单id',
+  `topic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '主题',
+  `message_body` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` tinyint DEFAULT NULL,
+  `create_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

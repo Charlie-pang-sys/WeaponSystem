@@ -1,5 +1,6 @@
 package com.charlie.util;
 
+
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
 import lombok.extern.slf4j.Slf4j;

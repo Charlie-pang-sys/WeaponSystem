@@ -5,23 +5,21 @@ server:
 
 spring:
   datasource:
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME}
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+#    url: jdbc:mysql://192.168.153.130:3306/order?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 123456
     hikari:
       auto-commit: true
-      pool-name: order-system-hikari
+      pool-name: alarm-hikari
       #最大连接数上限
-      maximum-pool-size: 20
+      maximum-pool-size: 50
       #获取连接超时时间
       connection-timeout: 5000
       #最小空闲连接数
-      minimum-idle: 50
+      minimum-idle: 10
       #空闲连接存活时间
-      idle-timeout: 300000
+      idle-timeout: 600000
       #连接最大生命周期
       max-lifetime: 1800000
-  redis:
-    host: ${SPRING_REDIS_HOST}
-    port: ${SPRING_REDIS_PORT}

@@ -16,22 +16,47 @@ services:
     ports:
       - "6379:6379"
 
-  kafka:
-    image: bitnami/kafka:latest
-    container_name: kafka
+  # NameServer 服务
+  rmq-namesrv:
+    image: apache/rocketmq:4.9.4
+    container_name: rmq-namesrv
     ports:
-      - "9092:9092"
+      - "9876:9876"
+    command: ["sh", "-c", "cd /home/rocketmq/rocketmq-4.9.4/bin && exec ./mqnamesrv"]
     environment:
-      # --- KRaft 模式配置 ---
-      - KAFKA_CFG_PROCESS_ROLES=broker,controller
-      - KAFKA_CFG_NODE_ID=1
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://192.168.153.130:9092
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
+      - JAVA_OPTS=-server -Xms512m -Xmx512m -Xmn256m
+      - SPRING_ROCKETMQ_NAME-SERVER=rmq-namesrv
+    volumes:
+      - ./data/namesrv/logs:/home/rocketmq/rocketmq-4.9.4/logs
+      - ./data/namesrv/store:/home/rocketmq/rocketmq-4.9.4/store
+
+  # Broker 服务
+  rmq-broker:
+    image: apache/rocketmq:4.9.4
+    container_name: rmq-broker
+    ports:
+      - "10911:10911"  # Broker 服务端口
+      - "10909:10909"  # HA 高可用端口（主从复制）
+    command: ["sh", "-c", "cd /home/rocketmq/rocketmq-4.9.4/bin/mqbroker -n rmq-namesrv:9876 -c conf/broker.conf & tail -f /dev/null"]
+    environment:
+      - JAVA_OPTS=-server -Xms512m -Xmx512m -Xmn256m
+    volumes:
+      - ./data/broker/logs:/home/rocketmq/rocketmq-4.9.4/logs
+      - ./data/broker/store:/home/rocketmq/rocketmq-4.9.4/store
+      - ./conf/broker.conf:/home/rocketmq/rocketmq-4.9.4/conf/broker.conf
+    depends_on:
+      - rmq-namesrv
+
+  # RocketMQ Dashboard（管理界面）
+  rmq-dashboard:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name: rmq-dashboard
+    ports:
+      - "8899:8080"  # 外部访问端口，可改为 9090:8080
+    environment:
+      - JAVA_OPTS=-Drocketmq.namesrv.addr=rmq-namesrv:9876 -Dserver.port=8080
+    depends_on:
+      - rmq-namesrv
 
   order-system:
     build: 
@@ -52,23 +77,12 @@ services:
       - SPRING_REDIS_PORT=6379
       - SPRING_REDIS_DATABASE=0
 
-      # ✅ 配置 Kafka 地址
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - SPRING_KAFKA_PRODUCER_VALUE-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
-      - SPRING_KAFKA_PRODUCER_KEY-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
-      - SPRING_KAFKA_PRODUCER_RETRIES=3
-      - SPRING_KAFKA_PRODUCER_BATCH-SIZE=16384
-      - SPRING_KAFKA_PRODUCER_BUFFER-MEMORY=33554432
-      - SPRING_KAFKA_CONSUMER_KEY-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
-      - SPRING_KAFKA_CONSUMER_VALUE-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
-      - SPRING_KAFKA_CONSUMER_MAX-POLL-RECORDS=1000
-      - SPRING_KAFKA_CONSUMER_ENABLE-AUTO-COMMIT=true
-      - SPRING_KAFKA_CONSUMER_AUTO-OFFSET-RESET=latest
-      - SPRING_KAFKA_CONSUMER_AUTO-COMMIT-INTERVAL=100
+      # ✅ 配置 RocketMQ 地址
+      - ROCKETMQ_NAME-SERVER=rmq-namesrv:9876
     depends_on:
       - mysql
       - redis
-      - kafka
+      - rmq-namesrv
 
   order-worker:
     build: 
@@ -89,22 +103,12 @@ services:
       - SPRING_REDIS_PORT=6379
       - SPRING_REDIS_DATABASE=0
 
-      # ✅ 配置 Kafka 地址
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - SPRING_KAFKA_PRODUCER_VALUE-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
-      - SPRING_KAFKA_PRODUCER_KEY-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
-      - SPRING_KAFKA_PRODUCER_RETRIES=3
-      - SPRING_KAFKA_PRODUCER_BATCH-SIZE=16384
-      - SPRING_KAFKA_PRODUCER_BUFFER-MEMORY=33554432
-      - SPRING_KAFKA_CONSUMER_KEY-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
-      - SPRING_KAFKA_CONSUMER_VALUE-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
-      - SPRING_KAFKA_CONSUMER_MAX-POLL-RECORDS=1000
-      - SPRING_KAFKA_CONSUMER_ENABLE-AUTO-COMMIT=true
-      - SPRING_KAFKA_CONSUMER_AUTO-OFFSET-RESET=latest
-      - SPRING_KAFKA_CONSUMER_AUTO-COMMIT-INTERVAL=100
+      # ✅ 配置 RocketMQ 地址
+      - ROCKETMQ_NAME-SERVER=rmq-namesrv:9876
     depends_on:
-      - kafka
       - mysql
+      - redis
+      - rmq-namesrv
 
   alarm-system:
     build: 
@@ -120,21 +124,10 @@ services:
       - SPRING_DATASOURCE_PASSWORD=123456
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
 
-      # ✅ 配置 Kafka 地址
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - SPRING_KAFKA_PRODUCER_VALUE-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
-      - SPRING_KAFKA_PRODUCER_KEY-SERIALIZER=org.apache.kafka.common.serialization.StringSerializer
-      - SPRING_KAFKA_PRODUCER_RETRIES=3
-      - SPRING_KAFKA_PRODUCER_BATCH-SIZE=16384
-      - SPRING_KAFKA_PRODUCER_BUFFER-MEMORY=33554432
-      - SPRING_KAFKA_CONSUMER_KEY-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
-      - SPRING_KAFKA_CONSUMER_VALUE-DESERIALIZER=org.apache.kafka.common.serialization.StringDeserializer
-      - SPRING_KAFKA_CONSUMER_MAX-POLL-RECORDS=1000
-      - SPRING_KAFKA_CONSUMER_ENABLE-AUTO-COMMIT=true
-      - SPRING_KAFKA_CONSUMER_AUTO-OFFSET-RESET=latest
-      - SPRING_KAFKA_CONSUMER_AUTO-COMMIT-INTERVAL=100
+      # ✅ 配置 RocketMQ 地址
+      - ROCKETMQ_NAME-SERVER=rmq-namesrv:9876
     depends_on:
-      - kafka
+      - rmq-namesrv
       - mysql
   timertask-system:
     build: 
@@ -149,11 +142,5 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=123456
       - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
-
-      # ✅ 配置 Redis 地址
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
-      - SPRING_REDIS_DATABASE=0
     depends_on:
-      - redis
       - mysql
