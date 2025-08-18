@@ -10,15 +10,17 @@ import com.charlie.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -108,53 +110,42 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderDO> implements 
             Long endTime,
             int pageNum,
             int pageSize) {
-
         String zsetKey = String.format(ORDER_ZSET_KEY, userId);
+        // 校验分页参数
+        if (pageNum < 1) pageNum = 1;
+        if (pageSize > 100) pageSize = 50;
 
-        // 1. 查询时间范围内的订单 ID（按时间倒序）
-        Set<Object> orderIdSet = redisTemplate.opsForZSet().rangeByScore(
-                zsetKey,
-                startTime != null ? startTime : 0D,
-                endTime != null ? endTime : Double.MAX_VALUE,
-                0, // offset（暂不限制，先查所有 ID）
-                10000 // limit（防止太多，可调大）
-        );
+        double startScore = startTime != null ? startTime : System.currentTimeMillis() - 7 * 24 * 3600_000L;
+        double endScore = endTime != null ? endTime : System.currentTimeMillis();
 
-        if (orderIdSet == null || orderIdSet.isEmpty()) {
+        Set<ZSetOperations.TypedTuple<Object>> tuples = redisTemplate.opsForZSet()
+                .reverseRangeByScoreWithScores(zsetKey, startScore, endScore,
+                        (long) (pageNum - 1) * pageSize, pageSize);
+
+        if (tuples == null || tuples.isEmpty()) {
             return PageResult.empty();
         }
 
-        // 2. 批量获取订单详情（HGET 批量）
-        List<String> orderKeys = orderIdSet.stream()
+        List<String> orderKeys = tuples.stream()
+                .map(ZSetOperations.TypedTuple::getValue)
                 .map(id -> "order:" + id)
                 .collect(Collectors.toList());
 
-        List<OrderDO> allOrders = new ArrayList<>();
         List<Object> results = redisTemplate.opsForValue().multiGet(orderKeys);
+        List<OrderDO> pageOrders = new ArrayList<>();
         if (results != null) {
             for (Object obj : results) {
                 if (obj instanceof OrderDO) {
-                    allOrders.add((OrderDO) obj);
+                    OrderDO order = (OrderDO) obj;
+                    // 4. 内存中过滤 status（如果业务需要）
+                    if (order.getStatus() == status) {
+                        pageOrders.add(order);
+                    }
                 }
             }
         }
-
-        // 3. 内存中过滤状态（如果指定了 status）
-        Stream<OrderDO> stream = allOrders.stream().filter(order -> status == order.getStatus());
-
-        List<OrderDO> filteredOrders = stream
-                .sorted(Comparator.comparing(OrderDO::getCreateTime).reversed()) // 按时间倒序
-                .collect(Collectors.toList());
-
-        // 4. 手动分页
-        int total = filteredOrders.size();
-        int start = (pageNum - 1) * pageSize;
-        int end = Math.min(start + pageSize, total);
-
-        List<OrderDO> pageData = start >= total ? Collections.emptyList() :
-                filteredOrders.subList(start, end);
-
-        return PageResult.of(pageData, total, pageNum, pageSize);
+        int total = redisTemplate.opsForZSet().count(zsetKey, startScore, endScore).intValue();
+        return PageResult.of(pageOrders, total, pageNum, pageSize);
     }
 
     @Override
